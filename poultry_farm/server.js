@@ -1,29 +1,58 @@
 const express = require('express');
 const path = require('path');
-const mysql = require('mysql2/promise'); // Using mysql2/promise for async/await support
-const dotenv = require('dotenv'); // For environment variable management
+const mysql = require('mysql2/promise');
+const dotenv = require('dotenv');
+const { URL } = require('url');
+
+dotenv.config(); // Load environment variables from .env
+
 const app = express();
-const port = 3000; // Hardcoded port
+const port = 3000;
 
 // Middleware
-app.use(express.json()); // For parsing application/json
+app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-// --- MySQL Database Connection Pool ---
-// IMPORTANT: These credentials are hardcoded. REPLACE with your actual details.
-// For production, always use environment variables!
+// --- MySQL Database Connection Pool using DATABASE_URL ---
+const dbUrl = new URL(process.env.DATABASE_URL);
 
-// --- MySQL Database Connection Pool ---
 const pool = mysql.createPool({
-    uri: process.env.DATABASE_URL, // Uses the variable from Render
+    host: dbUrl.hostname,
+    user: dbUrl.username,
+    password: dbUrl.password,
+    database: dbUrl.pathname.replace('/', ''),
+    port: dbUrl.port || 3306,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
     ssl: {
-        rejectUnauthorized: true
+        rejectUnauthorized: false // Set to true only if your DB provider requires strict SSL
     }
 });
-// --- API Endpoints ---
+
+// --- API Endpoints (your existing routes remain unchanged) ---
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+});
+
+// ... all your route handlers stay exactly the same ...
+
+// --- Server Initialization ---
+pool.getConnection()
+    .then(connection => {
+        console.log('✅ Successfully connected to the database.');
+        connection.release();
+        app.listen(port, () => {
+            console.log(`🚀 Poultry Farm server running on http://localhost:${port}`);
+        });
+    })
+    .catch(error => {
+        console.error('--- DATABASE CONNECTION FAILED ---');
+        console.error('Please check your DATABASE_URL in .env or Render environment settings.');
+        console.error(`MySQL error: ${error.message}`);
+        process.exit(1);
+    });
 
 // Serve the main HTML file (frontend entry point)
 app.get('/', (req, res) => {
