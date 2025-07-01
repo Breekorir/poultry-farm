@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const mysql = require('mysql2/promise'); // Using mysql2/promise for async/await support
-
+const dotenv = require('dotenv'); // For environment variable management
 const app = express();
 const port = 3000; // Hardcoded port
 
@@ -12,16 +12,17 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 // --- MySQL Database Connection Pool ---
 // IMPORTANT: These credentials are hardcoded. REPLACE with your actual details.
 // For production, always use environment variables!
-const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root', // <-- REPLACE with your MySQL username
-    password: '', // <-- REPLACE with your MySQL password
-    database: 'poultry_farm_db', // <-- REPLACE if your database name is different
-    waitForConnections: true,
-    connectionLimit: 10, // Max number of connections in the pool
-    queueLimit: 0 // No limit for queued connection requests
-});
 
+// --- MySQL Database Connection Pool ---
+const pool = mysql.createPool({
+    uri: process.env.DATABASE_URL, // Uses the variable from Render
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+    ssl: {
+        rejectUnauthorized: true
+    }
+});
 // --- API Endpoints ---
 
 // Serve the main HTML file (frontend entry point)
