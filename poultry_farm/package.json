@@ -1,8 +1,21 @@
 {
+  "name": "poultry-farm",
+  "version": "1.0.0",
+  "description": "Poultry Farm Management System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node -r dotenv/config server.js",
+    "dev": "nodemon -r dotenv/config server.js"
+  },
   "dependencies": {
     "dotenv": "^17.0.0",
     "express": "^5.1.0",
     "mysql": "^2.18.1",
     "mysql2": "^3.14.1"
-  }
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  },
+  "author": "",
+  "license": "ISC"
 }
