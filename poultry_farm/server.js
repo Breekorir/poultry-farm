@@ -31,7 +31,7 @@ const pool = mysql.createPool({
 });
 
 // --- API Endpoints (your existing routes remain unchanged) ---
-app.get('/favicon.ico', (req, res) => res.sendStatus(204));
+/* app.get('/favicon.ico', (req, res) => res.sendStatus(204)); */
 
 
 app.get('/', (req, res) => {
