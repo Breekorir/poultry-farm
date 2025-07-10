@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 const mysql = require('mysql2/promise');
 const app = express();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 const SECRET_KEY = 'poultrySecretKey';
 
 // MySQL connection pool
@@ -17,6 +17,7 @@ const pool = mysql.createPool({
   user: process.env.MYSQL_USER || 'root',
   password: process.env.MYSQL_PASSWORD || '',
   database: process.env.MYSQL_DATABASE || 'poultry_farm',
+  port: process.env.MYSQL_PORT || 3306,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
